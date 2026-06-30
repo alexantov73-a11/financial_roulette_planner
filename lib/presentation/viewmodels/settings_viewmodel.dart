@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../data/services/storage_service.dart';
+import '../../data/services/notification_service.dart';
 import 'package:in_app_review/in_app_review.dart';
 
 class SettingsViewModel extends ChangeNotifier {
   final StorageService _storageService;
+  final NotificationService _notificationService = NotificationService();
 
   bool _notificationsEnabled = true;
 
@@ -12,7 +14,8 @@ class SettingsViewModel extends ChangeNotifier {
   bool get notificationsEnabled => _notificationsEnabled;
 
   Future<void> loadSettings() async {
-    _notificationsEnabled = true;
+    _notificationsEnabled = await _notificationService
+        .areNotificationsEnabled();
     notifyListeners();
   }
 
@@ -29,7 +32,17 @@ class SettingsViewModel extends ChangeNotifier {
   }
 
   Future<void> toggleNotifications(bool value) async {
-    _notificationsEnabled = value;
+    if (value) {
+      final granted = await _notificationService
+          .requestNotificationPermission();
+      // Якщо реджектнули (або редірект в Settings) — тумблер лишається вимкненим,
+      // юзер сам зможе ввімкнути після зміни дозволу в системних налаштуваннях
+      _notificationsEnabled = granted;
+    } else {
+      _notificationsEnabled = false;
+      // Опціонально: скасувати заплановані нагадування
+      await _notificationService.cancelAllNotifications();
+    }
     notifyListeners();
   }
 

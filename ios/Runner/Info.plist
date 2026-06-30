@@ -22,6 +22,10 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>NSCameraUsageDescription</key>
+    <string>Додаток використовує камеру для додавання фотографій до фінансових цілей, витрат та профілю користувача</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Додаток використовує доступ до фотогалереї для вибору зображень для фінансових цілей, витрат та профілю</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>

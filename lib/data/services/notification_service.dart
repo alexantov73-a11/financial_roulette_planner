@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -16,12 +18,14 @@ class NotificationService {
     const AndroidInitializationSettings androidInitializationSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const DarwinInitializationSettings iosInitializationSettings =
-        DarwinInitializationSettings(
-          requestAlertPermission: true,
-          requestBadgePermission: true,
-          requestSoundPermission: true,
-        );
+    const DarwinInitializationSettings
+    iosInitializationSettings = DarwinInitializationSettings(
+      // Не питаємо пермішен тут автоматично — робимо це вручну через
+      // requestNotificationPermission(), щоб контролювати UX (редірект і т.д.)
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
 
     const InitializationSettings initializationSettings =
         InitializationSettings(
@@ -30,12 +34,43 @@ class NotificationService {
         );
 
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
 
-    _flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-        >()
-        ?.requestPermissions(alert: true, badge: true, sound: true);
+  /// Повертає true, якщо нотифікації дозволені.
+  /// На Android — завжди true (до 13 включно permission не потрібен,
+  /// а на 13+ permission_handler сам відобразить системний попап при request).
+  Future<bool> areNotificationsEnabled() async {
+    if (Platform.isIOS) {
+      final status = await Permission.notification.status;
+      return status.isGranted;
+    } else {
+      final status = await Permission.notification.status;
+      return status.isGranted || status.isLimited;
+    }
+  }
+
+  /// Логіка вмикання нотифікацій:
+  /// - якщо permission ще не запитувався -> показуємо системний поп-ап
+  /// - якщо permission вже відхилений раніше (permanentlyDenied) ->
+  ///   редіректимо в налаштування застосунку
+  /// Повертає true, якщо нотифікації в результаті увімкнені.
+  Future<bool> requestNotificationPermission() async {
+    final status = await Permission.notification.status;
+
+    if (status.isGranted || status.isLimited) {
+      return true;
+    }
+
+    if (status.isPermanentlyDenied || status.isRestricted) {
+      // Юзер вже реджектив раніше (або обмежено системою) —
+      // повторний системний поп-ап ОС вже не покаже, тож ведемо в Settings
+      await openAppSettings();
+      return false;
+    }
+
+    // Перший запит — показуємо стандартний системний поп-ап (і iOS, і Android 13+)
+    final result = await Permission.notification.request();
+    return result.isGranted || result.isLimited;
   }
 
   Future<void> showNotification({
