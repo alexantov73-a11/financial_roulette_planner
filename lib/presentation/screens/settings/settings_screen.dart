@@ -9,126 +9,129 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Display Settings
-          _buildSectionTitle(context, '🎨 Display'),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Consumer<ThemeViewModel>(
-                builder: (context, themeVM, _) => SwitchListTile(
-                  title: const Text('Dark Mode'),
-                  value: themeVM.isDarkMode,
-                  onChanged: (value) async {
-                    await themeVM.toggleTheme();
-                  },
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Display Settings
+            _buildSectionTitle(context, '🎨 Display'),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Consumer<ThemeViewModel>(
+                  builder: (context, themeVM, _) => SwitchListTile(
+                    title: const Text('Dark Mode'),
+                    value: themeVM.isDarkMode,
+                    onChanged: (value) async {
+                      await themeVM.toggleTheme();
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-          // Profile Settings
-          _buildSectionTitle(context, '👤 Profile'),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Edit Profile'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () {
-                Navigator.of(context).pushNamed('/profile-edit');
-              },
+            // Profile Settings
+            _buildSectionTitle(context, '👤 Profile'),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Edit Profile'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  Navigator.of(context).pushNamed('/profile-edit');
+                },
+              ),
             ),
-          ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-          // Notifications
-          _buildSectionTitle(context, '🔔 Notifications'),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Consumer<SettingsViewModel>(
-                builder: (context, settingsVM, _) => SwitchListTile(
-                  title: const Text('Enable Notifications'),
-                  value: settingsVM.notificationsEnabled,
-                  onChanged: (value) async {
-                    await settingsVM.toggleNotifications(value);
-                  },
+            // Notifications
+            _buildSectionTitle(context, '🔔 Notifications'),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Consumer<SettingsViewModel>(
+                  builder: (context, settingsVM, _) => SwitchListTile(
+                    title: const Text('Enable Notifications'),
+                    value: settingsVM.notificationsEnabled,
+                    onChanged: (value) async {
+                      await settingsVM.toggleNotifications(value);
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-          // App Actions
-          _buildSectionTitle(context, '⭐ App'),
-          Card(
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.star),
-                  title: const Text('Rate App'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    context.read<SettingsViewModel>().requestAppReview();
-                  },
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  leading: const Icon(Icons.share),
-                  title: const Text('Share App'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    Share.share(
-                      'Check out Financial Roulette Planner - Smart budget allocation! https://example.com',
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // About
-          _buildSectionTitle(context, 'ℹ️ About'),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
+            // App Actions
+            _buildSectionTitle(context, '⭐ App'),
+            Card(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildAboutRow(context, 'Version', '1.0.0'),
-                  const SizedBox(height: 12),
-                  _buildAboutRow(context, 'Developer', 'Alex Antov'),
-                  const SizedBox(height: 12),
-                  _buildAboutRow(context, 'Platform', 'iOS & Android'),
+                  ListTile(
+                    leading: const Icon(Icons.star),
+                    title: const Text('Rate App'),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      context.read<SettingsViewModel>().requestAppReview();
+                    },
+                  ),
+                  const Divider(height: 0),
+                  ListTile(
+                    leading: const Icon(Icons.share),
+                    title: const Text('Share App'),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      Share.share(
+                        'Check out Financial Roulette Planner - Smart budget allocation! https://example.com',
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
-          ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
-          // Danger Zone
-          _buildSectionTitle(context, '⚠️ Danger Zone'),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.delete_forever, color: Colors.red),
-              title: const Text(
-                'Clear All Data',
-                style: TextStyle(color: Colors.red),
+            // About
+            _buildSectionTitle(context, 'ℹ️ About'),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildAboutRow(context, 'Version', '1.0.0'),
+                    const SizedBox(height: 12),
+                    _buildAboutRow(context, 'Developer', 'Alex Antov'),
+                    const SizedBox(height: 12),
+                    _buildAboutRow(context, 'Platform', 'iOS & Android'),
+                  ],
+                ),
               ),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () {
-                _showClearDataDialog(context);
-              },
             ),
-          ),
-          const SizedBox(height: 32),
-        ],
+            const SizedBox(height: 24),
+
+            // Danger Zone
+            _buildSectionTitle(context, '⚠️ Danger Zone'),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.delete_forever, color: Colors.red),
+                title: const Text(
+                  'Clear All Data',
+                  style: TextStyle(color: Colors.red),
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  _showClearDataDialog(context);
+                },
+              ),
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
       ),
     );
   }

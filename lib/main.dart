@@ -102,6 +102,15 @@ class MyApp extends StatelessWidget {
             theme: context.watch<ThemeViewModel>().getThemeData(),
             debugShowCheckedModeBanner: false,
             home: const PreloaderScreen(),
+            builder: (context, child) {
+              return GestureDetector(
+                onTap: () {
+                  // Закрити клавіатуру при тапу на вільне місце
+                  FocusScope.of(context).unfocus();
+                },
+                child: child,
+              );
+            },
             onGenerateRoute: (settings) {
               switch (settings.name) {
                 case '/onboarding':

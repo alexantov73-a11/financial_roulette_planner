@@ -20,62 +20,66 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Edit Profile')),
-      body: Consumer<ProfileEditViewModel>(
-        builder: (context, viewModel, _) => SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => _showPhotoOptions(context, viewModel),
-                child: Center(
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundImage: viewModel.photoPath.isNotEmpty
-                        ? FileImage(File(viewModel.photoPath))
-                        : null,
-                    child: viewModel.photoPath.isEmpty
-                        ? Icon(
-                            Icons.camera_alt,
-                            size: 40,
-                            color: Theme.of(context).primaryColor,
-                          )
-                        : null,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Edit Profile')),
+        body: Consumer<ProfileEditViewModel>(
+          builder: (context, viewModel, _) => SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () => _showPhotoOptions(context, viewModel),
+                  child: Center(
+                    child: CircleAvatar(
+                      radius: 60,
+                      backgroundImage: viewModel.photoPath.isNotEmpty
+                          ? FileImage(File(viewModel.photoPath))
+                          : null,
+                      child: viewModel.photoPath.isEmpty
+                          ? Icon(
+                              Icons.camera_alt,
+                              size: 40,
+                              color: Theme.of(context).primaryColor,
+                            )
+                          : null,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
-                onChanged: (v) => viewModel.setName(v),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: viewModel.isLoading
-                      ? null
-                      : () async {
-                          await viewModel.saveProfile();
-                          if (mounted) {
-                            // ignore: use_build_context_synchronously
-                            Navigator.of(context).pop();
-                          }
-                        },
-                  child: viewModel.isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Save Profile'),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: 'Name'),
+                  onChanged: (v) => viewModel.setName(v),
                 ),
-              ),
-            ],
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: viewModel.isLoading
+                        ? null
+                        : () async {
+                            await viewModel.saveProfile();
+                            if (mounted) {
+                              // ignore: use_build_context_synchronously
+                              Navigator.of(context).pop();
+                            }
+                          },
+                    child: viewModel.isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Save Profile'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
